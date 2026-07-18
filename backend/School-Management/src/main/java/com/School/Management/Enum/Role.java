@@ -1,0 +1,22 @@
+package com.School.Management.Enum;
+
+public enum Role {
+    STUDENT("STU"),
+    TEACHER("TEA"),
+    ADMIN("ADMIN"),
+    LIBRARY("LIB"),
+    FINANCE("FIN"),
+    ADMISSION("ADM"),
+    EXAMINATION("EXM"),
+    DEVICES("DEV");
+
+    private final String code;
+
+    Role(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+}

@@ -1,0 +1,134 @@
+services:
+
+  mysql:
+    image: mysql:8.4
+    container_name: school-mysql
+    restart: unless-stopped
+
+    profiles:
+      - docker-db
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      - school-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: school-redis
+
+    profiles:
+      - docker-db
+
+    restart: unless-stopped
+
+    command: redis-server --appendonly yes
+
+    ports:
+      - "6380:6379"
+
+    volumes:
+      - redis-data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      - school-network
+
+  backend:
+    build:
+      context: ../backend/School-Management
+
+    image: school-backend:latest
+
+    container_name: school-backend
+
+    restart: unless-stopped
+
+    environment:
+  
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE}
+
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+
+      SPRING_REDIS_HOST: ${SPRING_REDIS_HOST}
+      SPRING_REDIS_PORT: ${SPRING_REDIS_PORT}
+
+      TZ: Asia/Kolkata
+
+    ports:
+      - "7777:7777"
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    networks:
+      - school-network
+
+  frontend:
+    image: school-frontend:latest
+    container_name: school-frontend
+    restart: unless-stopped
+    expose:
+    - "80"
+    networks:
+      - school-network
+
+  nginx:
+    build:
+      context: ./nginx
+
+    image: school-nginx:latest
+
+    container_name: school-nginx
+
+    restart: unless-stopped
+
+    depends_on:
+      - frontend
+      - backend
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+    - ./ssl:/etc/nginx/ssl:ro
+
+    networks:
+      - school-network
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  school-network:
+    driver: bridge
+
