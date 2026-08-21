@@ -23,6 +23,8 @@ export type Teacher = {
 
     status: "ACTIVE" | "INACTIVE";
 
+    gender: string;
+
     role: string;
 };
 export interface TeacherFormData {
@@ -35,6 +37,7 @@ export interface TeacherFormData {
     dateOfBirth: string;
     status: string;
     role: string;
+    gender: string;
 }
 
 export interface TeacherStats {

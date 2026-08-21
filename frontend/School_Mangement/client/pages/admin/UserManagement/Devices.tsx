@@ -4,11 +4,11 @@ import { MessageCircle, X } from "lucide-react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/admin/Sidebar";
 import Copilot from "@/components/admin/Copilot";
-import DeviceHeader from "@/components/admin/devices/Header";
+import DeviceHeader from "@/components/admin/UserManagement/devices/Header";
 import useDevices from "@/hooks/admin/useDevices";
-import DevicesTable from "@/components/admin/devices/Table";
-import DevicePagination from "@/components/admin/devices/Pagination";
-import AddDeviceDrawer from "@/components/admin/devices/AddDrawer";
+import DevicesTable from "@/components/admin/UserManagement/devices/Table";
+import DevicePagination from "@/components/admin/UserManagement/devices/Pagination";
+import AddDeviceDrawer from "@/components/admin/UserManagement/devices/AddDrawer";
 
 export default function Devices() {
     const {

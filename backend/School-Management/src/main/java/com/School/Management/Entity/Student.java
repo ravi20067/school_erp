@@ -41,11 +41,11 @@ public class Student {
 
     private LocalDate admissionDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    private SchoolClass schoolClass;
+    private ClassEntity classEntity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id")
     private Section section;
 

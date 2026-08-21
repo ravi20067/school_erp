@@ -7,12 +7,12 @@ import Sidebar from "@/components/admin/Sidebar";
 import Copilot from "@/components/admin/Copilot";
 import useStudents from "@/hooks/admin/useStudents";
 import type { Student } from "@/types/admin/student";
-import StudentHeader from "@/components/admin/student/Header";
-import StudentStats from "@/components/admin/student/Stats";
-import StudentFilters from "@/components/admin/student/Filters";
-import StudentTable from "@/components/admin/student/Table";
-import StudentPagination from "@/components/admin/student/Pagination";
-import AddStudentDrawer from "@/components/admin/student/AddDrawer";
+import StudentHeader from "@/components/admin/UserManagement/student/Header";
+import StudentStats from "@/components/admin/UserManagement/student/Stats";
+import StudentFilters from "@/components/admin/UserManagement/student/Filters";
+import StudentTable from "@/components/admin/UserManagement/student/Table";
+import StudentPagination from "@/components/admin/UserManagement/student/Pagination";
+import AddStudentDrawer from "@/components/admin/UserManagement/student/AddDrawer";
 
 export default function Student() {
     const {
@@ -29,6 +29,8 @@ export default function Student() {
         studentList,
 
         filteredStudents,
+
+        classes,
 
         sections,
 
@@ -122,6 +124,8 @@ export default function Student() {
                             selectedSection={selectedSection}
                             setSelectedSection={setSelectedSection}
 
+                            classes={classes}
+
                             sections={sections}
 
                             onClassChange={handleClassChange}
@@ -183,6 +187,7 @@ export default function Student() {
                 errorMsg={errorMsg}
                 receiptStudent={receiptStudent}
                 formData={formData}
+                classes={classes}
                 sections={sections}
                 onFormChange={handleFormChange}
                 onClassChange={handleClassChange}

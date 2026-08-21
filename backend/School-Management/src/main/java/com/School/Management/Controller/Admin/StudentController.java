@@ -3,8 +3,6 @@ package com.School.Management.Controller.Admin;
 import com.School.Management.DTO.Admin.Student.AdminStudentStatsDTO;
 import com.School.Management.DTO.Admin.Student.StudentDTO;
 import com.School.Management.Entity.Student;
-import com.School.Management.Enum.Classes;
-import com.School.Management.Enum.Sections;
 import com.School.Management.Service.StudentService;
 import com.School.Management.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,12 @@ public class StudentController {
     private StudentService adminService;
 
 
+    @GetMapping("/classes")
+    public ResponseEntity<List<String>> getClasses() {
+
+        return ResponseEntity.ok(adminService.getClasses());
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> saveStudent(@RequestBody StudentDTO studentDTO){
 
@@ -37,20 +41,21 @@ public class StudentController {
 
     @GetMapping("/sections")
     public ResponseEntity<List<String>> loadSections(
-            @RequestParam("class") Classes schoolClass) {
+            @RequestParam("class") String schoolClass) {
 
         return ResponseEntity.ok(adminService.getSections(schoolClass));
     }
+
     @GetMapping("/students")
     public ResponseEntity<List<StudentDTO>> loadStudents(
 
             @RequestParam(required = false) String search,
 
             @RequestParam(value = "class", required = false)
-            Classes schoolClass,
+            String schoolClass,
 
             @RequestParam(required = false)
-            Sections section
+            String section
     ) {
 
         List<StudentDTO> students =

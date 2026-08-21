@@ -24,6 +24,11 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminStudents from "./pages/admin/UserManagement/Students";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminTeachers from "./pages/admin/UserManagement/Teacher";
+import AdminClass from "./pages/admin/AcademicManagement/Classes";
+import AdminSubjects from "./pages/admin/AcademicManagement/Subject";
+import AdminCources from "./pages/admin/AcademicManagement/Cources";
+import AdminStudyMaterial from "./pages/admin/AcademicManagement/StudyMaterial";
+import AdminTimeTable from "./pages/admin/AcademicManagement/Timetable";
 import TeacherLayout from "./pages/teacher/TeacherLayout";
 import AttendenceAuthenticator from "./pages/teacher/AttendenceAuthenticator";
 import AdminDevices from "./pages/admin/UserManagement/Devices";
@@ -68,6 +73,11 @@ const App = () => (
               <Route path="students" element={<AdminStudents />} />
               <Route path="teachers" element={<AdminTeachers />} />
               <Route path="devices" element={<AdminDevices />} />
+              <Route path="classes" element={<AdminClass />} />
+              <Route path="subjects" element={<AdminSubjects />} />
+              <Route path="cources" element={<AdminCources />} />
+              <Route path="study-material" element={<AdminStudyMaterial />} />
+              <Route path="timetable" element={<AdminTimeTable />} />
             </Route>
 
             <Route

@@ -9,12 +9,14 @@ import com.School.Management.Enum.Role;
 import com.School.Management.Enum.Status;
 import com.School.Management.Repository.*;
 import jakarta.transaction.Transactional;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 
 @Component
@@ -25,7 +27,7 @@ public class UserService {
     private UserRepo userRepo;
 
     @Autowired
-    private SchoolClassRepo schoolClassRepo;
+    private ClassRepo classRepo;
 
     @Autowired
     private SectionRepo sectionRepo;
@@ -83,6 +85,7 @@ public class UserService {
                 .joiningDate(LocalDate.now())
                 .dateOfBirth(dto.getDateOfBirth())
                 .status(dto.getStatus())
+                .gender(dto.getGender())
                 .user(user)
                 .build();
 
@@ -104,20 +107,32 @@ public class UserService {
         String admissionNo = Role.STUDENT.getCode() + currentYear +
                 String.format("%05d", sequence.getCurrentValue());
 
-        SchoolClass schoolClass = schoolClassRepo
-                .findByClassName(dto.getSchoolClass())
+        ClassEntity classEntity = classRepo
+                .findByClassNameAndAcademicYear_Current(dto.getSchoolClass(),true)
                 .orElseThrow(() ->
                         new RuntimeException("Class not found"));
 
         Section section = sectionRepo
-                .findBySectionNameAndSchoolClass(
+                .findByNameAndClassEntity(
                         dto.getSection(),
-                        schoolClass
+                        classEntity
                 )
                 .orElseThrow(() ->
                         new RuntimeException("Section not found"));
 
-        section.setTotalStudents(section.getTotalStudents() + 1);
+
+        int currentStudentCount =
+                section.getStudentCount() == null
+                        ? 0
+                        : section.getStudentCount();
+
+        if (currentStudentCount >= section.getCapacity()) {
+            throw new RuntimeException("Capacity of class is full");
+        }
+
+        int newStudentCount = currentStudentCount + 1;
+
+        section.setStudentCount(newStudentCount);
         sectionRepo.save(section);
         User user = User.builder()
                 .username(admissionNo)
@@ -140,10 +155,10 @@ public class UserService {
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
                 .address(dto.getAddress())
-                .rollNumber(section.getTotalStudents())
+                .rollNumber(section.getStudentCount())
                 .status(Status.ACTIVE)
                 .admissionDate(LocalDate.now())
-                .schoolClass(schoolClass)
+                .classEntity(classEntity)
                 .section(section)
                 .user(user)
                 .build();
@@ -177,12 +192,12 @@ public class UserService {
 
         } else {
             return UserProfileDto.builder()
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .firstName(user.getTeacher().getFirstName())
-                    .lastName(user.getTeacher().getLastName())
-                    .email(user.getTeacher().getEmail())
-                    .phone(user.getTeacher().getPhone())
+                    .id(0L)
+                    .username("admin")
+                    .firstName("administrator ")
+                    .lastName("team")
+                    .email("admin@xyz.com")
+                    .phone("1234567890")
                     .build();
         }
     }

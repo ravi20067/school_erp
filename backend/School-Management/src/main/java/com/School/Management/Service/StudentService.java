@@ -3,16 +3,18 @@ package com.School.Management.Service;
 
 import com.School.Management.DTO.Admin.Student.AdminStudentStatsDTO;
 import com.School.Management.DTO.Admin.Student.StudentDTO;
+import com.School.Management.Entity.ClassEntity;
+import com.School.Management.Entity.Section;
 import com.School.Management.Entity.Student;
-import com.School.Management.Enum.Classes;
-import com.School.Management.Enum.Sections;
 import com.School.Management.Repository.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 
 
@@ -24,6 +26,8 @@ public class StudentService {
     private final StudentRepo studentRepository;
 
     private final SectionRepo sectionRepository;
+
+    private final ClassRepo classRepo;
 
     public AdminStudentStatsDTO getDashboardStats() {
 
@@ -43,14 +47,15 @@ public class StudentService {
         );
     }
 
-    public @Nullable List<String> getSections(Classes className) {
-        return sectionRepository.findBySchoolClass_ClassName(className)
+    public @Nullable List<String> getSections(String className) {
+        ClassEntity classEntity = classRepo.findByClassNameAndAcademicYear_Current(className,true).orElseThrow(() -> new ResourceNotFoundException("class not found"));
+        return sectionRepository.findByClassEntity(classEntity)
                 .stream()
-                .map(section -> section.getSectionName().name())
+                .map(Section::getName)
                 .toList();
     }
 
-    public List<StudentDTO> loadStudents(String search, Classes schoolClass, Sections section) {
+    public List<StudentDTO> loadStudents(String search, String schoolClass, String section) {
         return studentRepository.searchStudents(search,schoolClass,section).stream()
                 .map(this::convertToStudentDTO)
                 .toList();
@@ -68,11 +73,17 @@ public class StudentService {
                 .email(student.getEmail())
                 .phone(student.getPhone())
                 .address(student.getAddress())
-                .schoolClass(student.getSchoolClass().getClassName())
-                .section(student.getSection().getSectionName())
+                .schoolClass(student.getClassEntity().getClassName())
+                .section(student.getSection().getName())
                 .rollNumber(student.getRollNumber())
                 .status(student.getStatus().name())
                 .admissionDate(student.getAdmissionDate())
                 .build();
+    }
+
+    public @Nullable List<String> getClasses() {
+        return classRepo.findByAcademicYear_Current(true).stream()
+                .map(ClassEntity::getClassName)
+                .toList();
     }
 }

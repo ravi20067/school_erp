@@ -39,6 +39,8 @@ public class Teacher {
 
     private LocalDate dateOfBirth;
 
+    private String gender;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -53,4 +55,7 @@ public class Teacher {
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
     private List<Subject> subjects = new ArrayList<>();
+
+    @OneToMany(mappedBy = "classTeacher")
+    private List<Section> classTeacherSections = new ArrayList<>();
 }

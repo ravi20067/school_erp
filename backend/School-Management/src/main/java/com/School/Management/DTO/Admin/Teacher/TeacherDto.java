@@ -36,5 +36,7 @@ public class TeacherDto {
 
     private Status status;
 
+    private String gender;
+
     private Role role;
 }

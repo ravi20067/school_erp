@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import {
     getStudentStats,
+    getClasses,
     getSections,
     getStudents,
     addStudent,
@@ -24,6 +25,8 @@ export default function useStudents() {
     const [studentList, setStudentList] = useState<Student[]>([]);
 
     const [loadingStudents, setLoadingStudents] = useState(false);
+
+    const [classes, setClasses] = useState<string[]>([]);
 
     const [sections, setSections] = useState<string[]>([]);
 
@@ -64,6 +67,22 @@ export default function useStudents() {
         getStudentStats()
             .then((data) => {
                 setStats(data);
+            })
+            .catch(console.error);
+
+        getClasses()
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setClasses(data);
+                }
+            })
+            .catch(console.error);
+
+        getSections(formData.schoolClass)
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setSections(data);
+                }
             })
             .catch(console.error);
     }, []);
@@ -226,6 +245,8 @@ Please retain this copy for future reference.
         filteredStudents,
 
         loadingStudents,
+
+        classes,
 
         sections,
         setSections,

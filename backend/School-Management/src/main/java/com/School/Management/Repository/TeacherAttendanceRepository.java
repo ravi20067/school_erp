@@ -24,4 +24,6 @@ public interface TeacherAttendanceRepository
             Teacher teacher,
             LocalDate attendanceDate
     );
+
+    Long countByAttendanceDate(LocalDate attendanceDate);
 }

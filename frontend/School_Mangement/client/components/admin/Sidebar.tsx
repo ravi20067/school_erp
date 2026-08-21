@@ -46,8 +46,8 @@ const menu = [
         title: "Academic Management",
         items: [
             { icon: School, label: "Classes", path: "/admin/classes" },
-            { icon: Layers, label: "Sections", path: "/admin/sections" },
             { icon: BookOpen, label: "Subjects", path: "/admin/subjects" },
+            { icon: Layers, label: "Cources", path: "/admin/cources" },
             { icon: Calendar, label: "Timetable", path: "/admin/timetable" },
             { icon: FolderOpen, label: "Study Material", path: "/admin/study-material" },
         ],

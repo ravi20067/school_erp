@@ -4,21 +4,39 @@ import com.School.Management.DTO.Admin.Teacher.AdminTeacherStatsDTO;
 import com.School.Management.DTO.Admin.Teacher.TeacherDto;
 import com.School.Management.Entity.Teacher;
 import com.School.Management.Enum.Status;
+import com.School.Management.Repository.TeacherAttendanceRepository;
+import com.School.Management.Repository.TeacherRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Transactional
 public class TeacherService {
+
+    private final TeacherRepo teacherRepo;
+
+    private final TeacherAttendanceRepository teacherAttendanceRepository;
+
     public @Nullable AdminTeacherStatsDTO getTeacherStats() {
-        return null;
+        return AdminTeacherStatsDTO.builder()
+                .totalTeacher(teacherRepo.count())
+                .male(teacherRepo.countByGender("Male"))
+                .female(teacherRepo.countByGender("Female"))
+                .toadayPresent(teacherAttendanceRepository.countByAttendanceDate(LocalDate.now()))
+                .build();
+
     }
 
-    public @Nullable TeacherDto getTeachers(String search, Status status) {
-        return null;
+    public @Nullable List<TeacherDto> getTeachers(String search, Status status) {
+        return teacherRepo.searchTeachers(search,status).stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     public @Nullable TeacherDto getTeacherById(Long id) {
@@ -46,6 +64,7 @@ public class TeacherService {
                 .dateOfBirth(teacher.getDateOfBirth())
                 .status(teacher.getStatus())
                 .role(teacher.getUser().getRoleUser())
+                .gender(teacher.getGender())
                 .build();
     }
 }

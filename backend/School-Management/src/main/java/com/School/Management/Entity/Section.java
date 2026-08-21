@@ -1,8 +1,8 @@
 package com.School.Management.Entity;
 
-import com.School.Management.Enum.Sections;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,17 +11,30 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Section {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private Sections sectionName;
+    private String name;
 
-    private Integer totalStudents;
-    @ManyToOne
-    @JoinColumn(name = "class_id")
-    private SchoolClass schoolClass;
+    private String roomNumber;
+
+    private Integer capacity;
+
+    private Integer studentCount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id", nullable = false)
+    private ClassEntity classEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_teacher_id")
+    private Teacher classTeacher;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private Course course;
 }

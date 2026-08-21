@@ -46,6 +46,7 @@ export default function useTeachers() {
         dateOfBirth: "",
         status: "ACTIVE",
         role: "TEACHER",
+        gender: "MALE",
     });
 
     const [stats, setStats] = useState<TeacherStats>({
@@ -103,6 +104,8 @@ export default function useTeachers() {
 
                     joiningDate: t.joiningDate,
 
+                    gender: t.gender || "MALE"
+
                 }));
 
                 setTeacherList(mapped);
@@ -154,6 +157,7 @@ export default function useTeachers() {
             dateOfBirth: "",
             status: "ACTIVE",
             role: "TEACHER",
+            gender: "MALE",
         });
 
     };
@@ -169,37 +173,44 @@ export default function useTeachers() {
 
         try {
 
-            const data = await addTeacher(formData);
+            const payload = {
+                ...formData,
+                gender: formData.gender || "MALE",
+            };
+
+            const data = await addTeacher(payload);
 
             if (data) {
 
                 const newTeacher: Teacher = {
 
-                    id: data.id,
+                    id: data.id || Date.now(),
 
-                    employeeId: data.employeeId,
+                    employeeId: data.employeeId || `EMP${Math.floor(1000 + Math.random() * 9000)}`,
 
-                    firstName: data.firstName,
+                    firstName: data.firstName || formData.firstName,
 
-                    lastName: data.lastName,
+                    lastName: data.lastName || formData.lastName,
 
-                    name: `${data.firstName} ${data.lastName}`,
+                    name: `${data.firstName || formData.firstName} ${data.lastName || formData.lastName}`,
 
-                    email: data.email,
+                    email: data.email || formData.email,
 
-                    phone: data.phone,
+                    phone: data.phone || formData.phone,
 
-                    qualification: data.qualification,
+                    qualification: data.qualification || formData.qualification,
 
-                    specialization: data.specialization,
+                    specialization: data.specialization || formData.specialization,
 
-                    dateOfBirth: data.dateOfBirth,
+                    dateOfBirth: data.dateOfBirth || formData.dateOfBirth,
 
-                    status: data.status,
+                    status: data.status || formData.status,
 
-                    joiningDate: data.joiningDate,
+                    joiningDate: data.joiningDate || new Date().toISOString().split("T")[0],
 
-                    role: data.role,
+                    role: data.role || formData.role,
+
+                    gender: data.gender || formData.gender || "MALE",
 
                 };
 
@@ -248,6 +259,7 @@ Teacher Name   : ${data.firstName} ${data.lastName}
 Email          : ${data.email}
 Phone          : ${data.phone}
 EmployeeID     : ${data.employeeId}
+Gender         : ${data.gender || "MALE"}
 Qualification  : ${data.qualification}
 Specialization : ${data.specialization}
 Date Of Birth  : ${data.dateOfBirth}

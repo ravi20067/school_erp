@@ -1,6 +1,11 @@
 import { Request, Response, RequestHandler } from "express";
 
-// Mock data for students
+type Teacher = { id: number; name: string; subject?: string };
+type Section = { id: number; name: string; classTeacher?: Teacher | null; studentCount: number; capacity: number; roomNumber?: string };
+type SchoolClass = { id: number; name: string; displayOrder: number; isActive: boolean; academicYearId: number; sections: Section[] };
+type AcademicYear = { id: number; name: string; startDate: string; endDate: string; current: boolean; active: boolean };
+
+// Initial Mock data
 const mockStudents = [
   {
     id: 1,
@@ -17,23 +22,72 @@ const mockStudents = [
     dateOfBirth: "2010-01-01",
     address: "123 Main St",
   },
-  // Add more mock students as needed
 ];
 
-// Mock sections per class
-const classSections: Record<string, string[]> = {
-  CLASS_10: ["A", "B", "C"],
-  CLASS_11: ["A", "B"],
-  CLASS_12: ["A"],
+const initialAcademicYears: AcademicYear[] = [
+  { id: 1, name: "2025 - 2026", startDate: "2025-04-01", endDate: "2026-03-31", current: true, active: true }
+];
+
+const initialTeachers: Teacher[] = [
+  { id: 1, name: "Sarah Jenkins", subject: "Mathematics" },
+  { id: 2, name: "Michael Vance", subject: "Science" },
+  { id: 3, name: "Anita Roy", subject: "English" },
+  { id: 4, name: "David Miller", subject: "Physics" },
+];
+
+let schoolClassesStore: SchoolClass[] = [
+  {
+    id: 1,
+    name: "CLASS_10",
+    displayOrder: 1,
+    isActive: true,
+    academicYearId: 1,
+    sections: [
+      { id: 101, name: "A", classTeacher: { id: 1, name: "Sarah Jenkins", subject: "Mathematics" }, studentCount: 38, capacity: 40, roomNumber: "Room 101" },
+      { id: 102, name: "B", classTeacher: { id: 2, name: "Michael Vance", subject: "Science" }, studentCount: 35, capacity: 40, roomNumber: "Room 102" },
+      { id: 103, name: "C", classTeacher: null, studentCount: 30, capacity: 40, roomNumber: "Room 103" }
+    ]
+  },
+  {
+    id: 2,
+    name: "CLASS_11",
+    displayOrder: 2,
+    isActive: true,
+    academicYearId: 1,
+    sections: [
+      { id: 201, name: "A", classTeacher: { id: 3, name: "Anita Roy", subject: "English" }, studentCount: 42, capacity: 45, roomNumber: "Room 201" },
+      { id: 202, name: "B", classTeacher: null, studentCount: 40, capacity: 45, roomNumber: "Room 202" }
+    ]
+  },
+  {
+    id: 3,
+    name: "CLASS_12",
+    displayOrder: 3,
+    isActive: true,
+    academicYearId: 1,
+    sections: [
+      { id: 301, name: "A", classTeacher: { id: 4, name: "David Miller", subject: "Physics" }, studentCount: 40, capacity: 45, roomNumber: "Room 301" }
+    ]
+  }
+];
+
+export const loadClasses: RequestHandler = (_req: Request, res: Response) => {
+  const classNames = schoolClassesStore.map(c => c.name);
+  res.json(classNames);
 };
 
 export const loadSections: RequestHandler = (req: Request, res: Response) => {
-  const cls = req.query.class as string;
-  const sections = classSections[cls] ?? [];
-  res.json(sections);
+  const cls = (req.query.class as string) || "";
+  const found = schoolClassesStore.find(
+    c => c.name === cls || c.name === `CLASS_${cls}` || c.name.replace("CLASS_", "") === cls
+  );
+  if (found && found.sections.length > 0) {
+    return res.json(found.sections.map(s => s.name));
+  }
+  res.json([]);
 };
 
-export const getStats: RequestHandler = (req: Request, res: Response) => {
+export const getStats: RequestHandler = (_req: Request, res: Response) => {
   const totalStudents = mockStudents.length;
   const boys = mockStudents.filter(s => s.gender === 'MALE').length;
   const girls = mockStudents.filter(s => s.gender === 'FEMALE').length;
@@ -50,10 +104,98 @@ export const loadStudents: RequestHandler = (req: Request, res: Response) => {
     const matchesSearch =
       `${s.firstName} ${s.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
       s.admissionNo.includes(search);
-    const matchesClass = className ? s.schoolClass.replace("CLASS_", "") === className : true;
+    const matchesClass = className ? s.schoolClass.replace("CLASS_", "") === className || s.schoolClass === className : true;
     const matchesSection = section ? s.section === section : true;
     return matchesSearch && matchesClass && matchesSection;
   });
 
   res.json(filtered);
+};
+
+// Academic Management Endpoints
+export const getAcademicYears: RequestHandler = (_req: Request, res: Response) => {
+  res.json(initialAcademicYears);
+};
+
+export const getTeachers: RequestHandler = (_req: Request, res: Response) => {
+  res.json(initialTeachers);
+};
+
+export const getAcademicClasses: RequestHandler = (req: Request, res: Response) => {
+  const yearId = Number(req.query.academicYearId);
+  if (yearId) {
+    res.json(schoolClassesStore.filter(c => c.academicYearId === yearId));
+  } else {
+    res.json(schoolClassesStore);
+  }
+};
+
+export const createAcademicClass: RequestHandler = (req: Request, res: Response) => {
+  const { name, displayOrder, academicYearId } = req.body;
+  const newClass: SchoolClass = {
+    id: Date.now(),
+    name: name || "NEW CLASS",
+    displayOrder: displayOrder || schoolClassesStore.length + 1,
+    isActive: true,
+    academicYearId: academicYearId || 1,
+    sections: []
+  };
+  schoolClassesStore.push(newClass);
+  res.json(newClass);
+};
+
+export const deleteAcademicClass: RequestHandler = (req: Request, res: Response) => {
+  const classId = Number(req.params.classId);
+  schoolClassesStore = schoolClassesStore.filter(c => c.id !== classId);
+  res.json({ success: true });
+};
+
+export const createAcademicYear: RequestHandler = (req: Request, res: Response) => {
+  const newYear: AcademicYear = {
+    id: Date.now(),
+    name: req.body.name || "New Year",
+    startDate: req.body.startDate || "",
+    endDate: req.body.endDate || "",
+    current: false,
+    active: true
+  };
+  initialAcademicYears.push(newYear);
+  res.json(newYear);
+};
+
+export const createSection: RequestHandler = (req: Request, res: Response) => {
+  const classId = Number(req.params.classId);
+  const cls = schoolClassesStore.find(c => c.id === classId);
+  if (cls) {
+    const newSection: Section = {
+      id: Date.now(),
+      name: req.body.name || "A",
+      roomNumber: req.body.roomNumber || "",
+      capacity: req.body.capacity || 40,
+      studentCount: 0,
+      classTeacher: null
+    };
+    cls.sections.push(newSection);
+    return res.json(newSection);
+  }
+  res.status(404).json({ error: "Class not found" });
+};
+
+export const assignTeacher: RequestHandler = (req: Request, res: Response) => {
+  const sectionId = Number(req.params.sectionId);
+  const teacherId = Number(req.body.teacherId);
+  const teacher = initialTeachers.find(t => t.id === teacherId) || null;
+
+  for (const cls of schoolClassesStore) {
+    const sec = cls.sections.find(s => s.id === sectionId);
+    if (sec) {
+      sec.classTeacher = teacher;
+      return res.json(sec);
+    }
+  }
+  res.status(404).json({ error: "Section not found" });
+};
+
+export const copyStructure: RequestHandler = (_req: Request, res: Response) => {
+  res.json({ success: true });
 };

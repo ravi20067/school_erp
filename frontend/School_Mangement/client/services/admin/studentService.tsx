@@ -6,6 +6,18 @@ export const getStudentStats = async () => {
     return response.data;
 };
 
+export const getClasses = async () => {
+    try {
+        const response = await api.get("/admin/student/classes");
+        if (Array.isArray(response.data)) {
+            return response.data;
+        }
+    } catch (e) {
+        console.warn("Failed to fetch classes from backend", e);
+    }
+    return [];
+};
+
 export const getSections = async (schoolClass: string) => {
     const response = await api.get(
         `/admin/student/sections?class=${schoolClass}`

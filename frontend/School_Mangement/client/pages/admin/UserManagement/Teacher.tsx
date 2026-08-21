@@ -9,12 +9,12 @@ import Copilot from "@/components/admin/Copilot";
 
 import useTeachers from "@/hooks/admin/useTeacher";
 
-import PanelHeader from "@/components/admin/teacher/Header";
-import TeacherStats from "@/components/admin/teacher/Stats";
-import TeacherFilters from "@/components/admin/teacher/Filters";
-import TeacherTable from "@/components/admin/teacher/Table";
-import TeacherPagination from "@/components/admin/teacher/Pagination";
-import AddTeacherDrawer from "@/components/admin/teacher/AddDrawer";
+import PanelHeader from "@/components/admin/UserManagement/teacher/Header";
+import TeacherStats from "@/components/admin/UserManagement/teacher/Stats";
+import TeacherFilters from "@/components/admin/UserManagement/teacher/Filters";
+import TeacherTable from "@/components/admin/UserManagement/teacher/Table";
+import TeacherPagination from "@/components/admin/UserManagement/teacher/Pagination";
+import AddTeacherDrawer from "@/components/admin/UserManagement/teacher/AddDrawer";
 
 export default function Teacher() {
 

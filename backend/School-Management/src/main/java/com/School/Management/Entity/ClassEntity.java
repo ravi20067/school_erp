@@ -1,22 +1,39 @@
 package com.School.Management.Entity;
 
-import com.School.Management.Enum.Classes;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "classes")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SchoolClass {
+@Getter
+@Setter
+@Builder
+public class ClassEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private Classes className;
+    private String className;
+
+    private Integer displayOrder;
+
+    private Boolean active = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "academic_year_id", nullable = false)
+    private AcademicYear academicYear;
+
+    @OneToMany(
+            mappedBy = "classEntity",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Section> sections = new ArrayList<>();
+
 }

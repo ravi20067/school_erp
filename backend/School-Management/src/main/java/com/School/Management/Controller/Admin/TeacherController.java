@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/teacher")
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class TeacherController {
     }
 
     @GetMapping("/teachers")
-    public ResponseEntity<TeacherDto> getTeachers(
+    public ResponseEntity<List<TeacherDto>> getTeachers(
             @RequestParam(defaultValue = "") String search,
             @RequestParam(required = false) Status status
     ) {

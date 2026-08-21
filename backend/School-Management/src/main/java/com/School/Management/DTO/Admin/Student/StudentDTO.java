@@ -1,7 +1,5 @@
 package com.School.Management.DTO.Admin.Student;
 
-import com.School.Management.Enum.Classes;
-import com.School.Management.Enum.Sections;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,9 +31,9 @@ public class StudentDTO {
 
     private String address;
 
-    private Classes schoolClass;
+    private String schoolClass;
 
-    private Sections section;
+    private String section;
 
     private Integer rollNumber;
 
