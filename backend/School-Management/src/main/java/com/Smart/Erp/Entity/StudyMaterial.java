@@ -33,4 +33,8 @@ public class StudyMaterial {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mini_chapter_id", nullable = false, unique = true)
     private MiniChapter miniChapter;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", nullable = false, unique = true)
+    private Teacher assignedTeacher;
 }

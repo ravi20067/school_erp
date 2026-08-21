@@ -30,4 +30,7 @@ public class QuestionBank {
     @OneToMany(mappedBy = "questionBank")
     private List<Question> questions;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id")
+    private Teacher assignedTeacher;
 }

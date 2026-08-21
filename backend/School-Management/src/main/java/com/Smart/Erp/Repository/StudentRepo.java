@@ -28,12 +28,12 @@ public interface StudentRepo extends JpaRepository<Student, Long> {
         AND s.classEntity.academicYear.current = true
         AND
         (
-            :classEntity IS NULL
+            :classEntity IS NULL OR :classEntity = ''
             OR s.classEntity.academicYear.current = true
         )
         AND
         (
-            :section IS NULL
+            :section IS NULL OR :classEntity = ''
             OR s.section.name = :section
         )
         ORDER BY s.admissionNo

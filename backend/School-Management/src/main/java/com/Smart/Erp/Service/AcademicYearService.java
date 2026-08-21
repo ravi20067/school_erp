@@ -274,13 +274,13 @@ public class AcademicYearService {
         AcademicYear newCurrentYear = academicYearRepository.findById(yearId).orElseThrow(() -> new RuntimeException("New current not found"));
 
 
-        newCurrentYear.setCurrent(true);
         academicYearRepository
                 .findByCurrent(true)
                 .ifPresent(currentYear -> {
                     currentYear.setCurrent(false);
                     academicYearRepository.save(currentYear);
                 });
+        newCurrentYear.setCurrent(true);
         academicYearRepository.save(
                 newCurrentYear
         );
